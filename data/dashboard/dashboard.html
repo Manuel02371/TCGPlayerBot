@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Dashboard TCGPlayerBot</title>
+  <style>
+    body { margin: 0; font-family: Arial, sans-serif; color: #17202a; background: #f6f7f9; }
+    header { background: #19324a; color: white; padding: 24px 32px; }
+    main { padding: 24px 32px 40px; }
+    h1 { margin: 0 0 8px; font-size: 26px; }
+    h2 { margin-top: 28px; font-size: 18px; }
+    a { color: #0b63ce; }
+    .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 12px; }
+    .card { background: white; border: 1px solid #d9e1e8; border-radius: 8px; padding: 16px; }
+    .card span { display: block; color: #5b6773; font-size: 13px; margin-bottom: 8px; }
+    .card strong { font-size: 28px; }
+    table { width: 100%; border-collapse: collapse; background: white; border: 1px solid #d9e1e8; }
+    th, td { padding: 8px 10px; border-bottom: 1px solid #edf0f3; text-align: left; font-size: 13px; }
+    th { background: #eaf1f7; font-weight: 700; }
+    .empty { background: white; border: 1px solid #d9e1e8; padding: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>TCGPlayerBot</h1>
+    <div>Ultima ejecucion: 2026-07-03 13:01:07</div>
+  </header>
+  <main>
+    <p>Reporte Excel: <a href="../reports/reporte_ultima_ejecucion.xlsx">reporte_ultima_ejecucion.xlsx</a></p>
+    <section class="cards"><section class="card"><span>Total</span><strong>47</strong></section><section class="card"><span>Bajaron</span><strong>5</strong></section><section class="card"><span>Subieron</span><strong>2</strong></section><section class="card"><span>Nuevos</span><strong>0</strong></section><section class="card"><span>Errores</span><strong>0</strong></section><section class="card"><span>Oportunidades</span><strong>0</strong></section></section>
+    <h2>Mejores oportunidades</h2>
+    <p class="empty">Sin registros.</p>
+    <h2>Precios que bajaron</h2>
+    <table><thead><tr><th>nombre_carta</th><th>expansion</th><th>rareza</th><th>precio_anterior</th><th>precio_actual</th><th>diferencia_precio</th><th>porcentaje_margen</th><th>clasificacion_oportunidad</th></tr></thead><tbody><tr><td>Articuno</td><td>SV09: Journey Together</td><td>Illustration Rare</td><td>$24.67</td><td>$24.59</td><td>-0.08000000000000185</td><td></td><td>SIN_REFERENCIA</td></tr><tr><td>Lillie&#x27;s Clefairy ex</td><td>SV09: Journey Together</td><td>Double Rare</td><td>$2.06</td><td>$2.02</td><td>-0.040000000000000036</td><td></td><td>SIN_REFERENCIA</td></tr><tr><td>N&#x27;s Zoroark ex</td><td>SV09: Journey Together</td><td>Hyper Rare</td><td>$17.76</td><td>$17.73</td><td>-0.030000000000001137</td><td></td><td>SIN_REFERENCIA</td></tr><tr><td>N&#x27;s Zoroark ex</td><td>SV09: Journey Together</td><td>Double Rare</td><td>$1.46</td><td>$1.44</td><td>-0.020000000000000018</td><td></td><td>SIN_REFERENCIA</td></tr><tr><td>Salamence ex</td><td>SV09: Journey Together</td><td>Double Rare</td><td>$0.80</td><td>$0.78</td><td>-0.020000000000000018</td><td></td><td>SIN_REFERENCIA</td></tr></tbody></table>
+    <h2>Precios que subieron</h2>
+    <table><thead><tr><th>nombre_carta</th><th>expansion</th><th>rareza</th><th>precio_anterior</th><th>precio_actual</th><th>diferencia_precio</th><th>porcentaje_margen</th><th>clasificacion_oportunidad</th></tr></thead><tbody><tr><td>Dudunsparce ex</td><td>SV09: Journey Together</td><td>Ultra Rare</td><td>$1.69</td><td>$1.73</td><td>0.040000000000000036</td><td></td><td>SIN_REFERENCIA</td></tr><tr><td>Mamoswine ex</td><td>SV09: Journey Together</td><td>Ultra Rare</td><td>$0.92</td><td>$0.95</td><td>0.029999999999999916</td><td></td><td>SIN_REFERENCIA</td></tr></tbody></table>
+  </main>
+</body>
+</html>

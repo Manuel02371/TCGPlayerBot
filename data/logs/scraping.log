@@ -1,0 +1,224 @@
+2026-07-03 11:38:21,503 | INFO | Inicio scraping | filas_leidas=2 | filas_activas=2
+2026-07-03 11:41:54,012 | INFO | Parquet actualizado | nuevos=113 | total=113
+2026-07-03 11:47:42,506 | INFO | Inicio scraping | filas_leidas=11 | filas_activas=11
+2026-07-03 12:05:44,425 | INFO | Parquet actualizado | nuevos=508 | total=621
+2026-07-03 12:14:58,893 | INFO | Inicio scraping | filas_leidas=9 | filas_activas=9
+2026-07-03 12:16:02,281 | ERROR | Error procesando fila 1: Page.goto: Target page, context or browser has been closed
+Call log:
+  - navigating to "https://www.tcgplayer.com/search/pokemon/sv09-journey-together?productLineName=pokemon&productTypeName=Cards&view=grid&Condition=Near+Mint&Printing=Holofoil&setName=sv09-journey-together&RarityName=Special+Illustration+Rare&page=1", waiting until "load"
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+Call log:
+  - navigating to "https://www.tcgplayer.com/search/pokemon/sv09-journey-together?productLineName=pokemon&productTypeName=Cards&view=grid&Condition=Near+Mint&Printing=Holofoil&setName=sv09-journey-together&RarityName=Special+Illustration+Rare&page=1", waiting until "load"
+
+2026-07-03 12:16:02,291 | ERROR | Error procesando fila 2: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,299 | ERROR | Error procesando fila 3: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,307 | ERROR | Error procesando fila 4: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,314 | ERROR | Error procesando fila 5: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,322 | ERROR | Error procesando fila 6: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,329 | ERROR | Error procesando fila 7: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,337 | ERROR | Error procesando fila 8: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,343 | ERROR | Error procesando fila 9: Page.goto: Target page, context or browser has been closed
+Traceback (most recent call last):
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 271, in run_scraping
+    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "D:\Proyectos\WebScraping\TCGPlayerBot\src\scraper.py", line 207, in _scrape_item_with_page
+    page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\sync_api\_generated.py", line 9054, in goto
+    self._sync(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_sync_base.py", line 115, in _sync
+    return task.result()
+           ^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_page.py", line 552, in goto
+    return await self._main_frame.goto(**locals_to_params(locals()))
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_frame.py", line 153, in goto
+    await self._channel.send(
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 69, in send
+    return await self._connection.wrap_api_call(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Manuel\AppData\Local\Programs\Python\Python312\Lib\site-packages\playwright\_impl\_connection.py", line 559, in wrap_api_call
+    raise rewrite_error(error, f"{parsed_st['apiName']}: {error}") from None
+playwright._impl._errors.TargetClosedError: Page.goto: Target page, context or browser has been closed
+2026-07-03 12:16:02,799 | INFO | Parquet actualizado | nuevos=9 | total=630
+2026-07-03 12:46:09,953 | INFO | Inicio scraping | filas_leidas=9 | filas_activas=1
+2026-07-03 12:47:51,692 | INFO | Parquet actualizado | nuevos=47 | total=677
+2026-07-03 12:47:51,927 | INFO | Reporte generado | excel=D:\Proyectos\WebScraping\TCGPlayerBot\data\reports\reporte_ultima_ejecucion.xlsx | dashboard=D:\Proyectos\WebScraping\TCGPlayerBot\data\dashboard\dashboard.html
+2026-07-03 12:59:28,411 | INFO | Inicio scraping | filas_leidas=9 | filas_activas=1
+2026-07-03 13:01:07,149 | INFO | Parquet actualizado | nuevos=47 | total=724
+2026-07-03 13:01:07,326 | INFO | Reporte generado | excel=D:\Proyectos\WebScraping\TCGPlayerBot\data\reports\reporte_ultima_ejecucion.xlsx | dashboard=D:\Proyectos\WebScraping\TCGPlayerBot\data\dashboard\dashboard.html
