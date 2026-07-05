@@ -6,6 +6,7 @@ from openpyxl.styles import Font, PatternFill
 from openpyxl.utils import get_column_letter
 
 from src.config import (
+    LATEST_EXECUTION_EXCEL,
     MARGEN_BUENO,
     MARGEN_MUY_BUENO,
     OUTPUT_PARQUET,
@@ -174,6 +175,18 @@ def _format_sheet(writer, sheet_name: str) -> None:
         sheet.column_dimensions[column_letter].width = min(max(max_len + 2, 12), 45)
 
 
+def export_latest_execution_excel(df_latest: pd.DataFrame, path: Path = LATEST_EXECUTION_EXCEL) -> Path:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    output = _with_item_key(df_latest)
+
+    with pd.ExcelWriter(path, engine="openpyxl") as writer:
+        output.to_excel(writer, index=False, sheet_name="Ultima ejecucion")
+        _format_sheet(writer, "Ultima ejecucion")
+
+    pd.read_excel(path, sheet_name="Ultima ejecucion")
+    return path
+
+
 def generate_report_files(
     detail_df: pd.DataFrame,
     summary: dict,
@@ -207,6 +220,7 @@ def generate_report_files(
 def generate_latest_report() -> tuple[pd.DataFrame, dict, tuple[Path, Path, Path]]:
     historical = load_historical_data()
     latest = get_latest_execution(historical)
+    export_latest_execution_excel(latest)
     previous = get_previous_execution(historical)
     detail = compare_prices(latest, previous)
     summary = build_summary(detail)

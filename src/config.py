@@ -8,15 +8,14 @@ INPUT_DIR = ROOT_DIR / "input"
 OUTPUT_DIR = ROOT_DIR / "data" / "output"
 LOG_DIR = ROOT_DIR / "data" / "logs"
 REPORTS_DIR = ROOT_DIR / "data" / "reports"
-DASHBOARD_DIR = ROOT_DIR / "data" / "dashboard"
 
 INPUT_FILE = INPUT_DIR / "input_scraping.xlsx"
 OUTPUT_PARQUET = OUTPUT_DIR / "scraping_historico.parquet"
+LATEST_EXECUTION_EXCEL = OUTPUT_DIR / "scraping_ultima_ejecucion.xlsx"
 LOG_FILE = LOG_DIR / "scraping.log"
 REPORT_EXCEL = REPORTS_DIR / "reporte_ultima_ejecucion.xlsx"
 REPORT_CSV = REPORTS_DIR / "reporte_ultima_ejecucion.csv"
 REPORT_JSON = REPORTS_DIR / "resumen_ultima_ejecucion.json"
-DASHBOARD_HTML = DASHBOARD_DIR / "dashboard.html"
 
 BASE_URL = "https://www.tcgplayer.com"
 
@@ -24,7 +23,6 @@ DEFAULT_CONDITION = "Near Mint"
 DEFAULT_PRINTING = "Holofoil"
 HEADLESS = os.getenv("TCGPLAYER_HEADLESS", "true").lower() not in {"0", "false", "no", "n", "visible"}
 GENERATE_REPORT = True
-GENERATE_DASHBOARD = True
 
 MARGEN_MUY_BUENO = 0.30
 MARGEN_BUENO = 0.15

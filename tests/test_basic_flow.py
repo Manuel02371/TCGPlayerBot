@@ -7,7 +7,7 @@ import pandas as pd
 
 from src.input_loader import load_input_excel
 from src.parquet_store import append_to_parquet, read_existing_parquet
-from src.reporting import build_summary, compare_prices, generate_report_files
+from src.reporting import build_summary, compare_prices, export_latest_execution_excel, generate_report_files
 from src.transformer import add_execution_metadata, build_item_key
 
 
@@ -103,6 +103,20 @@ class BasicFlowTest(unittest.TestCase):
         keys = build_item_key(df).tolist()
 
         self.assertEqual(keys, ["input|set-a|set-a|", "input|set-b|set-b|"])
+
+    def test_exports_latest_execution_excel(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "ultima.xlsx"
+            export_latest_execution_excel(pd.DataFrame([{
+                "timestamp_ejecucion": "2026-07-03 12:30:00",
+                "nombre_carta": "Pikachu ex",
+                "market_price_usd": 12.9,
+            }]), path)
+
+            saved = pd.read_excel(path)
+
+            self.assertEqual(len(saved), 1)
+            self.assertEqual(saved.loc[0, "nombre_carta"], "Pikachu ex")
 
 
 if __name__ == "__main__":

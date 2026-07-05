@@ -2,9 +2,6 @@ import sys
 from datetime import datetime
 
 from src.config import (
-    DASHBOARD_DIR,
-    DASHBOARD_HTML,
-    GENERATE_DASHBOARD,
     GENERATE_REPORT,
     HEADLESS,
     INPUT_FILE,
@@ -13,7 +10,6 @@ from src.config import (
     OUTPUT_PARQUET,
     REPORTS_DIR,
 )
-from src.dashboard import generate_dashboard_html
 from src.input_loader import load_input_excel
 from src.logger import setup_logging
 from src.parquet_store import append_to_parquet
@@ -51,7 +47,7 @@ def _print_summary(df_output, added_count: int) -> None:
     print("Archivo Parquet actualizado correctamente.")
 
 
-def _print_report_summary(summary: dict, excel_path, dashboard_path) -> None:
+def _print_report_summary(summary: dict, excel_path) -> None:
     print()
     print("=" * 40)
     print("REPORTE DE VARIACIONES")
@@ -64,14 +60,12 @@ def _print_report_summary(summary: dict, excel_path, dashboard_path) -> None:
     print(f"Buenas oportunidades: {summary.get('mejores_oportunidades', 0)}")
     print()
     print(f"Reporte Excel: {_rel(excel_path)}")
-    if dashboard_path:
-        print(f"Dashboard: {_rel(dashboard_path)}")
     print("=" * 40)
 
 
 def main() -> int:
     logger = setup_logging()
-    for folder in [OUTPUT_DIR, LOG_DIR, REPORTS_DIR, DASHBOARD_DIR]:
+    for folder in [OUTPUT_DIR, LOG_DIR, REPORTS_DIR]:
         folder.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -95,11 +89,8 @@ def main() -> int:
 
         if GENERATE_REPORT:
             detail, summary, paths = generate_latest_report()
-            dashboard_path = None
-            if GENERATE_DASHBOARD:
-                dashboard_path = generate_dashboard_html(detail, summary, DASHBOARD_HTML, paths[0])
-            logger.info("Reporte generado | excel=%s | dashboard=%s", paths[0], dashboard_path)
-            _print_report_summary(summary, paths[0], dashboard_path)
+            logger.info("Reporte generado | excel=%s", paths[0])
+            _print_report_summary(summary, paths[0])
 
         return 0
     except Exception as exc:
