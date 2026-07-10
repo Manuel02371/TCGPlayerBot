@@ -1,10 +1,10 @@
 {
-  "fecha_ejecucion": "2026-07-10 17:10:14",
-  "total_items": 505,
-  "cantidad_bajaron": 229,
-  "cantidad_subieron": 236,
-  "cantidad_igual": 36,
-  "cantidad_nuevos": 4,
+  "fecha_ejecucion": "2026-07-10 22:15:06",
+  "total_items": 499,
+  "cantidad_bajaron": 215,
+  "cantidad_subieron": 172,
+  "cantidad_igual": 112,
+  "cantidad_nuevos": 0,
   "cantidad_error": 0,
   "cantidad_sin_precio": 0,
   "mejores_oportunidades": 0
