@@ -1,9 +1,9 @@
 {
-  "fecha_ejecucion": "2026-07-29 16:34:21",
+  "fecha_ejecucion": "2026-07-29 22:14:37",
   "total_items": 505,
-  "cantidad_bajaron": 236,
-  "cantidad_subieron": 211,
-  "cantidad_igual": 56,
+  "cantidad_bajaron": 222,
+  "cantidad_subieron": 165,
+  "cantidad_igual": 116,
   "cantidad_nuevos": 2,
   "cantidad_error": 0,
   "cantidad_sin_precio": 0,
