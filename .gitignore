@@ -3,3 +3,8 @@ __pycache__/
 .venv/
 *.pyc
 data/tcgplayer_prices*.csv
+# Archivos generados por el scraping
+data/output/*.parquet
+data/reports/*.csv
+data/reports/*.xlsx
+data/reports/*.json
