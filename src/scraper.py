@@ -1,21 +1,24 @@
-import logging
+"""Consulta el buscador de TCGPlayer y convierte su JSON en filas del proyecto."""
+
+import gzip
+import json
 import re
 import time
-from urllib.parse import parse_qs, urlencode, urljoin, urlparse
+from datetime import datetime
+from pathlib import Path
+from urllib.error import HTTPError, URLError
+from urllib.request import Request, urlopen
 
 import pandas as pd
-from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
-from playwright.sync_api import sync_playwright
 
 from src.config import (
     BASE_URL,
     DEFAULT_CONDITION,
     DEFAULT_PRINTING,
     DELAY_ENTRE_PAGINAS_SEG,
-    HEADLESS,
-    PAGE_LOAD_TIMEOUT,
-    WAIT_AFTER_GOTO_MS,
-    WAIT_MARKET_PRICE_MS,
+    RAW_DIR,
+    SEARCH_API_URL,
+    SEARCH_PAGE_SIZE,
 )
 
 
@@ -27,10 +30,10 @@ RAREZAS_BASE = [
 ]
 RAREZA_HYPER_SV = "Hyper Rare"
 RAREZA_HYPER_ME = "Mega Hyper Rare"
-LOGGER = logging.getLogger("tcgplayer_scraping")
 
 
 def obtener_rarezas_expansion(row: pd.Series) -> list[str]:
+    """Devuelve las rarezas por defecto; las expansiones Mega usan una variante propia."""
     set_slug = str(row.get("set_slug", "")).lower()
     set_name = str(row.get("set_name", "")).lower()
     if set_slug.startswith("me") or set_name.startswith("me"):
@@ -44,135 +47,13 @@ def limpiar_espacios(texto: object) -> str:
     return re.sub(r"\s+", " ", str(texto)).strip()
 
 
-def money_to_float(texto: object):
-    text = limpiar_espacios(texto)
-    match = re.search(r"\$?\s*([\d,]+(?:\.\d{1,2})?)", text)
-    return float(match.group(1).replace(",", "")) if match else None
-
-
 def limpiar_nombre_carta(titulo: str) -> str:
     return re.sub(r"\s*-\s*#?\d{1,4}/\d{1,4}\s*$", "", limpiar_espacios(titulo)).strip()
 
 
-def extraer_numero_carta(*textos) -> str:
-    match = re.search(r"#?(\d{1,4}/\d{1,4})", " ".join([text for text in textos if text]))
+def extraer_numero_carta(*textos: object) -> str:
+    match = re.search(r"#?(\d{1,4}/\d{1,4})", " ".join(limpiar_espacios(text) for text in textos))
     return match.group(1) if match else ""
-
-
-def limpiar_rareza(texto_rareza: str) -> str:
-    return re.sub(r"\s*,?\s*#?\d{1,4}/\d{1,4}\s*$", "", limpiar_espacios(texto_rareza)).strip(" ,")
-
-
-def obtener_texto(locator, selector: str) -> str:
-    try:
-        elemento = locator.locator(selector)
-        if elemento.count() == 0:
-            return ""
-        return limpiar_espacios(elemento.first.inner_text(timeout=5000))
-    except Exception:
-        return ""
-
-
-def build_url(row: pd.Series, rareza: str, page_number: int) -> str:
-    params = {
-        "productLineName": "pokemon",
-        "productTypeName": "Cards",
-        "view": "grid",
-        "Condition": limpiar_espacios(row.get("condicion")) or DEFAULT_CONDITION,
-        "Printing": limpiar_espacios(row.get("printing")) or DEFAULT_PRINTING,
-        "setName": limpiar_espacios(row.get("set_name")),
-        "RarityName": rareza,
-        "page": page_number,
-    }
-    return f"{BASE_URL}/search/pokemon/{limpiar_espacios(row.get('set_slug'))}?{urlencode(params)}"
-
-
-def scroll_pagina(page) -> None:
-    for _ in range(6):
-        page.mouse.wheel(0, 900)
-        page.wait_for_timeout(1000)
-    page.mouse.wheel(0, -1800)
-    page.wait_for_timeout(1200)
-
-
-def esperar_carga_correcta(page) -> bool:
-    try:
-        page.wait_for_load_state("networkidle", timeout=30000)
-    except Exception:
-        pass
-
-    page.wait_for_timeout(WAIT_AFTER_GOTO_MS)
-
-    try:
-        page.wait_for_selector(".product-card", timeout=30000)
-    except PlaywrightTimeoutError:
-        return False
-
-    try:
-        page.wait_for_selector(".product-card__market-price--value", timeout=WAIT_MARKET_PRICE_MS)
-    except PlaywrightTimeoutError:
-        pass
-
-    scroll_pagina(page)
-    page.wait_for_timeout(2000)
-    return True
-
-
-def existe_pagina_siguiente(page, numero_siguiente: int) -> bool:
-    try:
-        links = page.locator("a[href]").evaluate_all(
-            """
-            elements => elements.map(a => ({
-                href: a.href || "",
-                disabled: a.getAttribute("aria-disabled") || "",
-                className: a.className || ""
-            }))
-            """
-        )
-    except Exception:
-        return False
-
-    for item in links:
-        href = item.get("href", "")
-        if not href:
-            continue
-        if str(item.get("disabled", "")).lower() == "true":
-            continue
-        if "disabled" in str(item.get("className", "")).lower():
-            continue
-
-        page_param = parse_qs(urlparse(href).query).get("page", [""])[0]
-        if page_param == str(numero_siguiente):
-            return True
-    return False
-
-
-def parsear_card(card, row: pd.Series, rareza_buscada: str) -> dict:
-    titulo = obtener_texto(card, ".product-card__title")
-    rareza_texto = obtener_texto(card, ".product-card__rarity__variant")
-    href = ""
-    try:
-        href = card.locator("a").first.get_attribute("href")
-    except Exception:
-        pass
-
-    return {
-        "set_slug": limpiar_espacios(row.get("set_slug")),
-        "set_name": limpiar_espacios(row.get("set_name")),
-        "expansion": obtener_texto(card, ".product-card__set-name__variant"),
-        "nombre_carta": limpiar_nombre_carta(titulo),
-        "numero_carta": extraer_numero_carta(titulo, rareza_texto),
-        "rareza": limpiar_rareza(rareza_texto),
-        "rareza_buscada": rareza_buscada,
-        "market_price_usd": money_to_float(obtener_texto(card, ".product-card__market-price--value")),
-        "precio_referencia": row.get("precio_referencia"),
-        "url_carta": urljoin(BASE_URL, href) if href else "",
-        "condicion": limpiar_espacios(row.get("condicion")) or DEFAULT_CONDITION,
-        "printing": limpiar_espacios(row.get("printing")) or DEFAULT_PRINTING,
-        "estado_scraping": "OK",
-        "mensaje_error": "",
-        "observacion": row.get("observacion"),
-    }
 
 
 def _row_error(row: pd.Series, status: str, message: str) -> dict:
@@ -195,84 +76,138 @@ def _row_error(row: pd.Series, status: str, message: str) -> dict:
     }
 
 
-def _scrape_item_with_page(row: pd.Series, page, urls_vistas: set[str]) -> list[dict]:
+def build_search_payload(row: pd.Series, rareza: str, offset: int = 0) -> dict:
+    """Construye la misma consulta paginada que usa el buscador web."""
+    condition = limpiar_espacios(row.get("condicion")) or DEFAULT_CONDITION
+    printing = limpiar_espacios(row.get("printing")) or DEFAULT_PRINTING
+    return {
+        "algorithm": "sales_dismax",
+        "from": offset,
+        "size": SEARCH_PAGE_SIZE,
+        "filters": {
+            "term": {
+                "productLineName": ["pokemon"],
+                "productTypeName": ["Cards"],
+                "setName": [limpiar_espacios(row.get("set_name"))],
+                "rarityName": [rareza],
+            },
+            "range": {},
+            "match": {},
+        },
+        "listingSearch": {
+            "context": {"cart": {"packages": {}}},
+            "filters": {
+                "term": {"sellerStatus": "Live", "channelId": 0, "printing": [printing], "condition": [condition]},
+                "range": {"quantity": {"gte": 1}},
+                "exclude": {"channelExclusion": 0},
+            },
+        },
+        "context": {"cart": {"packages": {}}, "shippingCountry": "PE", "userProfile": {}},
+        "settings": {"useFuzzySearch": True, "didYouMean": {}},
+        "sort": {},
+    }
+
+
+def fetch_search_payload(payload: dict) -> dict:
+    """Descarga una página de datos sin abrir un navegador."""
+    request = Request(
+        SEARCH_API_URL,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "User-Agent": "Mozilla/5.0"},
+        method="POST",
+    )
+    try:
+        with urlopen(request, timeout=30) as response:
+            payload = json.load(response)
+    except (HTTPError, URLError, TimeoutError) as exc:
+        raise RuntimeError(f"No se pudo consultar TCGPlayer: {exc}") from exc
+    if payload.get("errors"):
+        raise RuntimeError(f"TCGPlayer devolvio errores: {payload['errors']}")
+    return payload
+
+
+def _raw_filename(row: pd.Series, rareza: str, page: int) -> str:
+    value = "-".join([limpiar_espacios(row.get("set_slug")), rareza, f"page-{page}"])
+    return re.sub(r"[^a-z0-9]+", "-", value.lower()).strip("-") + ".json.gz"
+
+
+def save_raw_payload(payload: dict, raw_run_dir: Path, row: pd.Series, rareza: str, page: int) -> None:
+    """Guarda la respuesta para poder reprocesarla sin consultar TCGPlayer otra vez."""
+    raw_run_dir.mkdir(parents=True, exist_ok=True)
+    with gzip.open(raw_run_dir / _raw_filename(row, rareza, page), "wt", encoding="utf-8") as file:
+        json.dump(payload, file, ensure_ascii=False)
+
+
+def parse_search_payload(payload: dict, row: pd.Series, rareza_buscada: str) -> tuple[list[dict], int]:
+    """Reduce la respuesta externa a las columnas usadas por el histórico y reportes."""
+    groups = payload.get("results", [])
+    if not groups:
+        return [], 0
+    group = groups[0]
+    records = []
+    for product in group.get("results", []):
+        product_id = product.get("productId")
+        title = limpiar_espacios(product.get("productName"))
+        number = limpiar_espacios(product.get("customAttributes", {}).get("number")) or extraer_numero_carta(title)
+        if not product_id or not title:
+            continue
+        records.append(
+            {
+                "set_slug": limpiar_espacios(row.get("set_slug")),
+                "set_name": limpiar_espacios(row.get("set_name")),
+                "expansion": limpiar_espacios(product.get("setName")),
+                "nombre_carta": limpiar_nombre_carta(title),
+                "numero_carta": number,
+                "rareza": limpiar_espacios(product.get("rarityName")),
+                "rareza_buscada": rareza_buscada,
+                "market_price_usd": product.get("marketPrice"),
+                "precio_referencia": row.get("precio_referencia"),
+                "url_carta": f"{BASE_URL}/product/{int(product_id)}",
+                "condicion": limpiar_espacios(row.get("condicion")) or DEFAULT_CONDITION,
+                "printing": limpiar_espacios(row.get("printing")) or DEFAULT_PRINTING,
+                "estado_scraping": "OK",
+                "mensaje_error": "",
+                "observacion": row.get("observacion"),
+            }
+        )
+    return records, int(group.get("totalResults", len(records)) or 0)
+
+
+def _scrape_row(row: pd.Series, urls_vistas: set[str], raw_run_dir: Path) -> list[dict]:
+    """Obtiene todas las páginas y rarezas de una fila del Excel."""
     rareza_input = limpiar_espacios(row.get("rareza"))
     rarezas = [rareza_input] if rareza_input else obtener_rarezas_expansion(row)
     resultados = []
-
-    for rareza_buscada in rarezas:
-        pagina = 1
+    for rareza in rarezas:
+        offset = 0
+        page = 1
         while True:
-            url = build_url(row, rareza_buscada, pagina)
-            page.goto(url, wait_until="load", timeout=PAGE_LOAD_TIMEOUT)
-
-            if not esperar_carga_correcta(page):
+            payload = fetch_search_payload(build_search_payload(row, rareza, offset))
+            save_raw_payload(payload, raw_run_dir, row, rareza, page)
+            cards, total = parse_search_payload(payload, row, rareza)
+            for card in cards:
+                if card["url_carta"] not in urls_vistas:
+                    urls_vistas.add(card["url_carta"])
+                    resultados.append(card)
+            offset += SEARCH_PAGE_SIZE
+            if offset >= total or not cards:
                 break
-
-            cards = page.locator(".product-card")
-            cantidad_cards = cards.count()
-            if cantidad_cards == 0:
-                break
-
-            for index in range(cantidad_cards):
-                data = parsear_card(cards.nth(index), row, rareza_buscada)
-                if not data["nombre_carta"] or not data["url_carta"]:
-                    continue
-                if data["url_carta"] in urls_vistas:
-                    continue
-                if data["rareza"] not in rarezas:
-                    continue
-
-                urls_vistas.add(data["url_carta"])
-                resultados.append(data)
-
-            siguiente_pagina = pagina + 1
-            if not existe_pagina_siguiente(page, siguiente_pagina):
-                break
-
-            pagina = siguiente_pagina
+            page += 1
             time.sleep(DELAY_ENTRE_PAGINAS_SEG)
-
-    if not resultados:
-        return [_row_error(row, "SIN_RESULTADO", "No se encontraron cards para la fila.")]
-    return resultados
-
-
-def scrape_item(row: pd.Series) -> list[dict]:
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=HEADLESS, slow_mo=120)
-        try:
-            page = browser.new_page(viewport={"width": 1400, "height": 900})
-            return _scrape_item_with_page(row, page, set())
-        finally:
-            browser.close()
+    return resultados or [_row_error(row, "SIN_RESULTADO", "No se encontraron cards para la fila.")]
 
 
 def run_scraping(df_input: pd.DataFrame) -> pd.DataFrame:
+    """Procesa todas las filas activas y devuelve registros listos para el histórico."""
     resultados = []
-    urls_vistas = set()
-
-    with sync_playwright() as p:
-        browser = p.chromium.launch(headless=HEADLESS, slow_mo=120)
+    urls_vistas: set[str] = set()
+    raw_run_dir = RAW_DIR / datetime.now().strftime("%Y%m%d_%H%M%S")
+    total = len(df_input)
+    for index, row in df_input.iterrows():
+        print(f"Procesando fila {index + 1}/{total}...")
         try:
-            page = browser.new_page(
-                viewport={"width": 1400, "height": 900},
-                user_agent=(
-                    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) "
-                    "AppleWebKit/537.36 (KHTML, like Gecko) "
-                    "Chrome/120.0.0.0 Safari/537.36"
-                ),
-            )
-
-            total = len(df_input)
-            for index, row in df_input.iterrows():
-                print(f"Procesando fila {index + 1}/{total}...")
-                try:
-                    resultados.extend(_scrape_item_with_page(row, page, urls_vistas))
-                except Exception as exc:
-                    LOGGER.exception("Error procesando fila %s: %s", index + 1, exc)
-                    resultados.append(_row_error(row, "ERROR", str(exc)))
-        finally:
-            browser.close()
-
+            resultados.extend(_scrape_row(row, urls_vistas, raw_run_dir))
+        except Exception as exc:
+            print(f"Error procesando fila {index + 1}: {exc}")
+            resultados.append(_row_error(row, "ERROR", str(exc)))
     return pd.DataFrame(resultados)

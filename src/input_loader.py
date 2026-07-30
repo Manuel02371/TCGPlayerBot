@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from src.config import DEFAULT_INPUT_ROWS, INPUT_COLUMNS, INPUT_FILE, REQUIRED_INPUT_COLUMNS
+from src.config import INPUT_FILE, REQUIRED_INPUT_COLUMNS
 
 
 ACTIVE_VALUES = {"1", "s", "si", "sí", "true", "yes", "x"}
@@ -28,11 +28,6 @@ def validate_input_columns(df: pd.DataFrame) -> None:
         raise ValueError(f"Faltan columnas obligatorias en el Excel: {', '.join(missing)}")
 
 
-def create_input_template(path: Path = INPUT_FILE) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    pd.DataFrame(DEFAULT_INPUT_ROWS, columns=INPUT_COLUMNS).to_excel(path, index=False)
-
-
 def _clean_strings(df: pd.DataFrame) -> pd.DataFrame:
     clean = df.copy()
     for col in clean.columns:
@@ -51,8 +46,9 @@ def _filter_active_rows(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def load_input_excel(path: Path = INPUT_FILE) -> pd.DataFrame:
+    """Lee el Excel, normaliza encabezados y deja solo filas activas."""
     if not path.exists():
-        create_input_template(path)
+        raise FileNotFoundError(f"No existe el Excel de entrada: {path}")
 
     df_raw = pd.read_excel(path, dtype=object)
     df = _clean_strings(normalize_columns(df_raw))

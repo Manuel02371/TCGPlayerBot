@@ -2,16 +2,12 @@ import sys
 from datetime import datetime
 
 from src.config import (
-    GENERATE_REPORT,
-    HEADLESS,
     INPUT_FILE,
-    LOG_DIR,
     OUTPUT_DIR,
     OUTPUT_PARQUET,
     REPORTS_DIR,
 )
 from src.input_loader import load_input_excel
-from src.logger import setup_logging
 from src.parquet_store import append_to_parquet
 from src.reporting import generate_latest_report
 from src.scraper import run_scraping
@@ -26,7 +22,7 @@ def _print_header(rows_read: int, rows_active: int) -> None:
     print("=" * 40)
     print("INICIO PROCESO SCRAPING")
     print("=" * 40)
-    print(f"Modo navegador: {'HEADLESS' if HEADLESS else 'VISIBLE'}")
+    print("Modo: consulta directa de datos")
     print(f"Input: {_rel(INPUT_FILE)}")
     print(f"Output historico: {_rel(OUTPUT_PARQUET)}")
     print(f"Filas leidas: {rows_read}")
@@ -64,8 +60,8 @@ def _print_report_summary(summary: dict, excel_path) -> None:
 
 
 def main() -> int:
-    logger = setup_logging()
-    for folder in [OUTPUT_DIR, LOG_DIR, REPORTS_DIR]:
+    """Ejecuta: Excel -> consulta TCGPlayer -> histórico -> reportes."""
+    for folder in [OUTPUT_DIR, REPORTS_DIR]:
         folder.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -77,24 +73,19 @@ def main() -> int:
         if df_input.empty:
             raise ValueError("No hay filas activas para procesar.")
 
-        logger.info("Inicio scraping | filas_leidas=%s | filas_activas=%s", rows_read, rows_active)
         df_raw = run_scraping(df_input)
         if df_raw.empty:
             raise ValueError("El scraping no genero registros de salida.")
 
         df_output = add_execution_metadata(df_raw, datetime.now(), INPUT_FILE.name)
-        added_count, total_count = append_to_parquet(df_output)
-        logger.info("Parquet actualizado | nuevos=%s | total=%s", added_count, total_count)
+        added_count, _ = append_to_parquet(df_output)
         _print_summary(df_output, added_count)
 
-        if GENERATE_REPORT:
-            detail, summary, paths = generate_latest_report()
-            logger.info("Reporte generado | excel=%s", paths[0])
-            _print_report_summary(summary, paths[0])
+        _, summary, paths = generate_latest_report()
+        _print_report_summary(summary, paths[0])
 
         return 0
     except Exception as exc:
-        logger.exception("Proceso detenido: %s", exc)
         print(f"ERROR: {exc}")
         return 1
 

@@ -1,156 +1,69 @@
 # TCGPlayerBot
 
-Proyecto de scraping para leer filas desde Excel, ejecutar scraping en TCGPlayer y guardar un historico acumulativo en Parquet.
+Bot de Python que consulta precios de cartas Pokémon en TCGPlayer y conserva un historial para comparar variaciones.
 
-## Flujo
-
-```text
-input/input_scraping.xlsx -> scraping headless -> data/output/scraping_historico.parquet -> reportes
-```
-
-## Estructura
+## Cómo funciona
 
 ```text
 input/input_scraping.xlsx
-data/output/scraping_historico.parquet
-data/output/scraping_ultima_ejecucion.xlsx
-data/logs/scraping.log
-data/reports/reporte_ultima_ejecucion.xlsx
-data/reports/reporte_ultima_ejecucion.csv
-data/reports/resumen_ultima_ejecucion.json
-src/config.py
-src/input_loader.py
-src/scraper.py
-src/transformer.py
-src/parquet_store.py
-src/reporting.py
-src/main.py
-tests/test_basic_flow.py
+        ↓
+consulta directa al buscador de TCGPlayer
+        ↓
+datos crudos temporales en data/raw/
+        ↓
+histórico Parquet y reportes Excel/CSV/JSON
+```
+
+No abre un navegador ni visita una carta por vez. Solicita los datos paginados del buscador, guarda cada respuesta comprimida para auditoría y la transforma localmente.
+
+## Carpetas importantes
+
+```text
+input/                         Excel que tú editas
+data/output/                   Histórico y última ejecución
+data/reports/                  Reportes finales
+data/raw/                      Copias temporales para auditoría (no se suben a Git)
+src/                           Código del proceso
+tests/                         Pruebas automáticas
 ```
 
 ## Excel de entrada
 
-Archivo:
-
-```text
-input/input_scraping.xlsx
-```
-
-Columnas:
+Edita `input/input_scraping.xlsx`. Las columnas son:
 
 ```text
 set_slug | set_name | rareza | condicion | printing | precio_referencia | activo | observacion
 ```
 
-Reglas:
-
 - `set_slug` y `set_name` son obligatorias.
-- Si `rareza` queda vacia, el proceso usa las rarezas base del scraper.
-- Si existe `activo`, solo procesa filas con `SI`, `S`, `YES`, `TRUE`, `1` o `X`.
-- `precio_referencia` permite calcular oportunidades de compra/reventa.
+- `activo` acepta `SI`, `SÍ`, `S`, `YES`, `TRUE`, `1` o `X`.
+- Si `rareza` queda vacía, se usan las rarezas configuradas para la expansión.
+- `precio_referencia` es opcional y habilita la clasificación de oportunidades.
 
-## Ejecucion
-
-Instalar dependencias:
+## Ejecutar
 
 ```bash
 pip install -r requirements.txt
-python -m playwright install chromium
-```
-
-Ejecutar:
-
-```bash
 python -m src.main
 ```
 
-O en Windows:
+En Windows también puedes abrir `run_scraping.bat`.
 
-```bat
-run_scraping.bat
-```
+## Resultados
 
-El navegador corre oculto por defecto. Para depurar visible:
+| Archivo | Contenido |
+| --- | --- |
+| `data/output/scraping_historico.parquet` | Todas las ejecuciones acumuladas. |
+| `data/output/scraping_ultima_ejecucion.xlsx` | Datos de la última ejecución. |
+| `data/reports/reporte_ultima_ejecucion.xlsx` | Resumen, detalle, bajas, subidas y oportunidades. |
+| `data/reports/reporte_ultima_ejecucion.csv` | El detalle en formato CSV. |
+| `data/reports/resumen_ultima_ejecucion.json` | Totales para consumo automático. |
 
-```bat
-set TCGPLAYER_HEADLESS=false
-python -m src.main
-```
+## Automatización
 
-## GitHub Actions
+GitHub Actions lo ejecuta diariamente a las 10:00 a.m. y 4:00 p.m. de Perú. Al terminar, actualiza el histórico, la última ejecución y los reportes.
 
-El workflow esta en:
-
-```text
-.github/workflows/tcgplayer-scraping.yml
-```
-
-Se ejecuta todos los dias a las 10:00 a.m. y 4:00 p.m. hora Peru/Lima.
-
-GitHub usa UTC, por eso el cron configurado es:
-
-```text
-0 15,21 * * *
-```
-
-Tambien se puede ejecutar manualmente desde la pestana **Actions** con `Run workflow`.
-
-## Salidas
-
-Historico acumulativo:
-
-```text
-data/output/scraping_historico.parquet
-```
-
-Ultima ejecucion en Excel:
-
-```text
-data/output/scraping_ultima_ejecucion.xlsx
-```
-
-Reportes:
-
-```text
-data/reports/reporte_ultima_ejecucion.xlsx
-data/reports/reporte_ultima_ejecucion.csv
-data/reports/resumen_ultima_ejecucion.json
-```
-
-Logs:
-
-```text
-data/logs/scraping.log
-```
-
-## Reporte de variaciones
-
-El reporte compara la ultima ejecucion contra la ejecucion anterior usando:
-
-```text
-expansion + rareza + nombre_carta + numero_carta
-```
-
-Estados:
-
-```text
-BAJO | SUBIO | IGUAL | NUEVO | SIN_PRECIO | ERROR
-```
-
-Oportunidades:
-
-```text
-MUY_BUENA_OPORTUNIDAD | BUENA_OPORTUNIDAD | NORMAL | NO_CONVIENE | SIN_REFERENCIA
-```
-
-Los umbrales se configuran en `src/config.py`:
-
-```python
-MARGEN_MUY_BUENO = 0.30
-MARGEN_BUENO = 0.15
-```
-
-## Validacion rapida
+## Validar
 
 ```bash
 python -m unittest tests.test_basic_flow

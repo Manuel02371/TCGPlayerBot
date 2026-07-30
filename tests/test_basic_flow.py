@@ -8,6 +8,7 @@ import pandas as pd
 from src.input_loader import load_input_excel
 from src.parquet_store import append_to_parquet, read_existing_parquet
 from src.reporting import build_summary, compare_prices, export_latest_execution_excel, generate_report_files
+from src.scraper import parse_search_payload
 from src.transformer import add_execution_metadata, build_item_key
 
 
@@ -27,6 +28,11 @@ class BasicFlowTest(unittest.TestCase):
             self.assertEqual(len(df), 1)
             self.assertEqual(df.attrs["rows_read"], 2)
             self.assertEqual(df.iloc[0]["set_slug"], "sv09-journey-together")
+
+    def test_load_input_requires_a_real_file(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            with self.assertRaises(FileNotFoundError):
+                load_input_excel(Path(tmp) / "missing.xlsx")
 
     def test_parquet_append_is_cumulative_and_dedupes_exact_rows(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -117,6 +123,29 @@ class BasicFlowTest(unittest.TestCase):
 
             self.assertEqual(len(saved), 1)
             self.assertEqual(saved.loc[0, "nombre_carta"], "Pikachu ex")
+
+    def test_parses_captured_search_payload(self):
+        payload = {
+            "results": [{
+                "totalResults": 1,
+                "results": [{
+                    "productId": 123,
+                    "productName": "Pikachu ex - 001/100",
+                    "setName": "SV01: Test",
+                    "rarityName": "Double Rare",
+                    "marketPrice": 12.5,
+                    "customAttributes": {"number": "001/100"},
+                }],
+            }]
+        }
+        row = pd.Series({"set_slug": "sv01-test", "set_name": "sv01-test", "activo": "SI"})
+
+        records, total = parse_search_payload(payload, row, "Double Rare")
+
+        self.assertEqual(total, 1)
+        self.assertEqual(records[0]["nombre_carta"], "Pikachu ex")
+        self.assertEqual(records[0]["market_price_usd"], 12.5)
+        self.assertEqual(records[0]["url_carta"], "https://www.tcgplayer.com/product/123")
 
 
 if __name__ == "__main__":

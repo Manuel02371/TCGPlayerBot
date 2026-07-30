@@ -1,4 +1,5 @@
-import os
+"""Rutas y reglas centrales del proceso."""
+
 from pathlib import Path
 
 
@@ -6,67 +7,28 @@ ROOT_DIR = Path(__file__).resolve().parents[1]
 
 INPUT_DIR = ROOT_DIR / "input"
 OUTPUT_DIR = ROOT_DIR / "data" / "output"
-LOG_DIR = ROOT_DIR / "data" / "logs"
 REPORTS_DIR = ROOT_DIR / "data" / "reports"
+RAW_DIR = ROOT_DIR / "data" / "raw"  # Copias temporales de las respuestas JSON.
 
 INPUT_FILE = INPUT_DIR / "input_scraping.xlsx"
 OUTPUT_PARQUET = OUTPUT_DIR / "scraping_historico.parquet"
 LATEST_EXECUTION_EXCEL = OUTPUT_DIR / "scraping_ultima_ejecucion.xlsx"
-LOG_FILE = LOG_DIR / "scraping.log"
 REPORT_EXCEL = REPORTS_DIR / "reporte_ultima_ejecucion.xlsx"
 REPORT_CSV = REPORTS_DIR / "reporte_ultima_ejecucion.csv"
 REPORT_JSON = REPORTS_DIR / "resumen_ultima_ejecucion.json"
 
 BASE_URL = "https://www.tcgplayer.com"
+SEARCH_API_URL = "https://mp-search-api.tcgplayer.com/v1/search/request?isList=false"
+SEARCH_PAGE_SIZE = 24
 
 DEFAULT_CONDITION = "Near Mint"
 DEFAULT_PRINTING = "Holofoil"
-HEADLESS = os.getenv("TCGPLAYER_HEADLESS", "true").lower() not in {"0", "false", "no", "n", "visible"}
-GENERATE_REPORT = True
-
 MARGEN_MUY_BUENO = 0.30
 MARGEN_BUENO = 0.15
 
-PAGE_LOAD_TIMEOUT = 60000
-WAIT_AFTER_GOTO_MS = 5000
-WAIT_MARKET_PRICE_MS = 10000
-DELAY_ENTRE_PAGINAS_SEG = 3
-
-INPUT_COLUMNS = [
-    "set_slug",
-    "set_name",
-    "rareza",
-    "condicion",
-    "printing",
-    "precio_referencia",
-    "activo",
-    "observacion",
-]
+DELAY_ENTRE_PAGINAS_SEG = 0.25  # Pausa corta para no saturar la búsqueda remota.
 
 REQUIRED_INPUT_COLUMNS = ["set_slug", "set_name"]
-
-DEFAULT_INPUT_ROWS = [
-    {
-        "set_slug": "sv09-journey-together",
-        "set_name": "sv09-journey-together",
-        "rareza": "",
-        "condicion": DEFAULT_CONDITION,
-        "printing": DEFAULT_PRINTING,
-        "precio_referencia": "",
-        "activo": "SI",
-        "observacion": "Fila heredada desde a.py",
-    },
-    {
-        "set_slug": "me01-mega-evolution",
-        "set_name": "me01-mega-evolution",
-        "rareza": "",
-        "condicion": DEFAULT_CONDITION,
-        "printing": DEFAULT_PRINTING,
-        "precio_referencia": "",
-        "activo": "SI",
-        "observacion": "Fila heredada desde a.py",
-    },
-]
 
 OUTPUT_COLUMNS = [
     "fecha_ejecucion",
